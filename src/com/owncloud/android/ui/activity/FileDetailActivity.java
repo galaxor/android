@@ -384,7 +384,7 @@ public class FileDetailActivity extends SherlockFragmentActivity implements File
                     
                 } else {
                     detailsFragment.updateFileDetails(false, (success));
-                    // TODO error message if !success ¿?
+                    // TODO error message if !success
                 }
             }
         } // TODO else if (fragment != null && fragment )
