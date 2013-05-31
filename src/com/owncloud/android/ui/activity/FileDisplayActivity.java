@@ -393,6 +393,7 @@ public class FileDisplayActivity extends SherlockFragmentActivity implements
                 EditNameDialog dialog = EditNameDialog.newInstance(getString(R.string.uploader_info_dirname), "", this);
                 dialog.show(getSupportFragmentManager(), "createdirdialog");
                 break;
+            }
             case R.id.downloadall:{
                 this.TogglePolicy();
                 Account tAccount = AccountUtils.getCurrentOwnCloudAccount(this);
