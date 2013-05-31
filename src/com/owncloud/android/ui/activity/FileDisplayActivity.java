@@ -22,6 +22,7 @@ package com.owncloud.android.ui.activity;
 import java.io.File;
 
 import android.accounts.Account;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
@@ -44,9 +45,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -77,6 +80,7 @@ import com.owncloud.android.files.services.FileObserverService;
 import com.owncloud.android.files.services.FileUploader;
 import com.owncloud.android.files.services.FileUploader.FileUploaderBinder;
 import com.owncloud.android.network.OwnCloudClientUtils;
+import com.owncloud.android.operations.DownloadAllFilesOperation;
 import com.owncloud.android.operations.OnRemoteOperationListener;
 import com.owncloud.android.operations.RemoteOperation;
 import com.owncloud.android.operations.RemoteOperationResult;
@@ -105,6 +109,7 @@ import eu.alefzero.webdav.WebdavClient;
  * 
  * @author Bartek Przybylski
  * @author David A. Velasco
+ * @edit Sven Clemens <sclemens@compumaster.de>
  */
 
 public class FileDisplayActivity extends SherlockFragmentActivity implements
@@ -388,6 +393,15 @@ public class FileDisplayActivity extends SherlockFragmentActivity implements
                 EditNameDialog dialog = EditNameDialog.newInstance(getString(R.string.uploader_info_dirname), "", this);
                 dialog.show(getSupportFragmentManager(), "createdirdialog");
                 break;
+            case R.id.downloadall:{
+                this.TogglePolicy();
+                Account tAccount = AccountUtils.getCurrentOwnCloudAccount(this);
+                RemoteOperation operation = new DownloadAllFilesOperation(mCurrentDir.getRemotePath(), mCurrentDir.getFileId(), mStorageManager, tAccount, getApplicationContext());
+                WebdavClient wdc = OwnCloudClientUtils.createOwnCloudClient(tAccount, getApplicationContext());
+                
+                operation.execute(wdc);
+                startSynchronization(); // workaround to display files while downloading
+                break;
             }
             case R.id.action_sync_account: {
                 startSynchronization();
@@ -418,6 +432,12 @@ public class FileDisplayActivity extends SherlockFragmentActivity implements
         return retval;
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	private void TogglePolicy(){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
+        StrictMode.setThreadPolicy(policy);
+    }
+    
     private void startSynchronization() {
         ContentResolver.cancelSync(null, AccountAuthenticator.AUTH_TOKEN_TYPE);   // cancel the current synchronizations of any ownCloud account
         Bundle bundle = new Bundle();

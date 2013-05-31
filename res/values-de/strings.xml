@@ -229,4 +229,5 @@
   <string name="failed_upload_retry_do_nothing_text">Upload nicht gestarted, Sie sind nicht online für ein Softupload</string>
   <string name="failed_upload_failure_text">Fehlermeldung: </string>
   <string name="failed_upload_quota_exceeded_text">Bitte überprüfen sie ihre Serverkonfiguration, möglicherweise ist ihre Upload Limit überschritten</string>
+  <string name="actionbar_downloadall">Fehlende Dateien herunterladen</string>
 </resources>
