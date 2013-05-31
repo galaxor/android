@@ -172,6 +172,7 @@ public class DownloadAllFilesOperation extends RemoteOperation {
                             checkAndFixForeignStoragePath(oldFile);
                             file.setStoragePath(oldFile.getStoragePath());
                         }
+                        file.setKeepInSync(true);
     
                         /// scan default location if local copy of file is not linked in OCFile instance
                         if (file.getStoragePath() == null && !file.isDirectory()) {
