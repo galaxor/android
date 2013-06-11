@@ -236,6 +236,7 @@ public class DownloadAllFilesOperation extends RemoteOperation {
                     file = mChildren.get(i);
                     if (file.getLastSyncDateForProperties() != mCurrentSyncTime) {
                         Log.d(TAG, "removing file: " + file);
+                        Log.d(TAG, "Properties: "+file.getLastSyncDateForProperties()+" vs now: "+mCurrentSyncTime);
                         mStorageManager.removeFile(file, (file.isDown() && file.getStoragePath().startsWith(currentSavePath)));
                         mChildren.remove(i);
                     } else {
@@ -270,27 +271,8 @@ public class DownloadAllFilesOperation extends RemoteOperation {
                 query.releaseConnection();  // let the connection available for other methods
         }
 
-        // This will make sure everything is up to date.
-        startSynchronization();
-        
         return result;
     }
-
-    /**
-     * This is lifted from FileDisplayActivity.
-     * Perhaps there is a better way to do this?  But calling this function
-     * from the activity wouldn't have been right, because the activity may not
-     * have been current.
-     */
-    private void startSynchronization() {
-        ContentResolver.cancelSync(null, AccountAuthenticator.AUTH_TOKEN_TYPE);   // cancel the current synchronizations of any ownCloud account
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(
-                AccountUtils.getCurrentOwnCloudAccount(mContext),
-                AccountAuthenticator.AUTH_TOKEN_TYPE, bundle);
-    }
-    
 
     public boolean isMultiStatus(int status) {
         return (status == HttpStatus.SC_MULTI_STATUS); 
