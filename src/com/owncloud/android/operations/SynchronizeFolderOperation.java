@@ -35,6 +35,7 @@ import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.owncloud.android.datamodel.DataStorageManager;
@@ -283,7 +284,7 @@ public class SynchronizeFolderOperation extends RemoteOperation {
         file.setModificationTimestamp(we.modifiedTimestamp());
         file.setParentId(mParentId);
         if (we.contentType() != "DIR") {
-          file.setKeepInSync(true);
+          file.setKeepInSync(PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("default_keep_in_sync", false));
         }
         return file;
     }

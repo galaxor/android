@@ -38,6 +38,7 @@ import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.owncloud.android.AccountUtils;
@@ -176,7 +177,7 @@ public class DownloadAllFilesOperation extends RemoteOperation {
                             checkAndFixForeignStoragePath(oldFile);
                             file.setStoragePath(oldFile.getStoragePath());
                         }
-                        file.setKeepInSync(true);
+                        file.setKeepInSync(PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("default_keep_in_sync", false));
     
                         /// scan default location if local copy of file is not linked in OCFile instance
                         if (file.getStoragePath() == null && !file.isDirectory()) {
@@ -236,7 +237,6 @@ public class DownloadAllFilesOperation extends RemoteOperation {
                     file = mChildren.get(i);
                     if (file.getLastSyncDateForProperties() != mCurrentSyncTime) {
                         Log.d(TAG, "removing file: " + file);
-                        Log.d(TAG, "Properties: "+file.getLastSyncDateForProperties()+" vs now: "+mCurrentSyncTime);
                         mStorageManager.removeFile(file, (file.isDown() && file.getStoragePath().startsWith(currentSavePath)));
                         mChildren.remove(i);
                     } else {
