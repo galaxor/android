@@ -35,9 +35,13 @@ import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.owncloud.android.AccountUtils;
+import com.owncloud.android.authenticator.AccountAuthenticator;
 import com.owncloud.android.datamodel.DataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.operations.RemoteOperationResult.ResultCode;
@@ -265,8 +269,26 @@ public class DownloadAllFilesOperation extends RemoteOperation {
             if (query != null)
                 query.releaseConnection();  // let the connection available for other methods
         }
+
+        // This will make sure everything is up to date.
+        startSynchronization();
         
         return result;
+    }
+
+    /**
+     * This is lifted from FileDisplayActivity.
+     * Perhaps there is a better way to do this?  But calling this function
+     * from the activity wouldn't have been right, because the activity may not
+     * have been current.
+     */
+    private void startSynchronization() {
+        ContentResolver.cancelSync(null, AccountAuthenticator.AUTH_TOKEN_TYPE);   // cancel the current synchronizations of any ownCloud account
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(
+                AccountUtils.getCurrentOwnCloudAccount(mContext),
+                AccountAuthenticator.AUTH_TOKEN_TYPE, bundle);
     }
     
 

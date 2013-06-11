@@ -282,6 +282,9 @@ public class SynchronizeFolderOperation extends RemoteOperation {
         file.setMimetype(we.contentType());
         file.setModificationTimestamp(we.modifiedTimestamp());
         file.setParentId(mParentId);
+        if (we.contentType() != "DIR") {
+          file.setKeepInSync(true);
+        }
         return file;
     }
     
